@@ -11,6 +11,16 @@ const ampNoscriptBoilerplate = `body{-webkit-animation:none;-moz-animation:none;
 const interpolate = (str, map) =>
   str.replace(/{{\s*[\w\.]+\s*}}/g, match => map[match.replace(/[{}]/g, "")]);
 
+const removeDuplicate = (tuple, component) => {
+  let [seen, list] = tuple;
+  const name = typeof component === "string" ? component : component.name;
+  // if component hasn't been seen
+  if (seen.indexOf(name) === -1) {
+    seen.push(name);
+    list.push(component);
+  }
+  return [seen, list];
+};
 export const onPreRenderHTML = (
   {
     getHeadComponents,
@@ -35,6 +45,7 @@ export const onPreRenderHTML = (
   const preBodyComponents = getPreBodyComponents();
   const postBodyComponents = getPostBodyComponents();
   const isAmp = pathname && pathname.indexOf(pathIdentifier) > -1;
+
   if (isAmp) {
     const styles = headComponents.reduce((str, x) => {
       if (x.type === "style") {
@@ -303,17 +314,20 @@ export const replaceRenderer = (
       iframe.parentNode.replaceChild(ampIframe, iframe);
     });
     setHeadComponents(
-      Array.from(new Set(headComponents)).map((component, i) => (
-        <Fragment key={`head-components-${i}`}>
-          <script
-            async
-            custom-element={component.name}
-            src={`https://cdn.ampproject.org/v0/${component.name}-${
-              component.version
-            }.js`}
-          />
-        </Fragment>
-      ))
+      Array.from(new Set(headComponents))
+        .reduce(removeDuplicate, [[], []])
+        .pop() // get the lsat item, which is the list
+        .map((component, i) => (
+          <Fragment key={`head-components-${i}`}>
+            <script
+              async
+              custom-element={component.name}
+              src={`https://cdn.ampproject.org/v0/${component.name}-${
+                component.version
+              }.js`}
+            />
+          </Fragment>
+        ))
     );
     replaceBodyHTMLString(document.body.children[0].outerHTML);
   }
