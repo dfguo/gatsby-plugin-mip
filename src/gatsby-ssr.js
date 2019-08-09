@@ -21,6 +21,16 @@ const removeDuplicate = (tuple, component) => {
   }
   return [seen, list];
 };
+
+// remove canonical if it exists
+const removeCanonical = x => {
+  return !(
+    x.type === "link" &&
+    x.props.rel === "canonical" &&
+    x.props["data-amp"] !== "true"
+  );
+};
+
 export const onPreRenderHTML = (
   {
     getHeadComponents,
@@ -45,7 +55,6 @@ export const onPreRenderHTML = (
   const preBodyComponents = getPreBodyComponents();
   const postBodyComponents = getPostBodyComponents();
   const isAmp = pathname && pathname.indexOf(pathIdentifier) > -1;
-
   if (isAmp) {
     const styles = headComponents.reduce((str, x) => {
       if (x.type === "style") {
@@ -91,12 +100,14 @@ export const onPreRenderHTML = (
       ) : (
         <Fragment />
       ),
-      ...headComponents.filter(
-        x =>
-          x.type !== "style" &&
-          (x.type !== "script" || x.props.type === "application/ld+json") &&
-          x.key !== "TypographyStyle"
-      )
+      ...headComponents
+        .filter(removeCanonical)
+        .filter(
+          x =>
+            x.type !== "style" &&
+            (x.type !== "script" || x.props.type === "application/ld+json") &&
+            x.key !== "TypographyStyle"
+        )
     ]);
     replacePreBodyComponents([
       ...preBodyComponents.filter(x => x.key !== "plugin-google-tagmanager")
@@ -145,6 +156,7 @@ export const onRenderBody = (
     setHeadComponents([
       <link
         rel="canonical"
+        data-amp="true"
         href={interpolate(relCanonicalPattern, {
           canonicalBaseUrl,
           pathname
