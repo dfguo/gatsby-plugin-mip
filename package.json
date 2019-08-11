@@ -1,20 +1,20 @@
 {
-  "name": "gatsby-plugin-amp",
+  "name": "gatsby-plugin-mip",
   "version": "0.2.2",
   "description": "A gatsby plugin for scaffolding AMP pages",
   "main": "index.js",
   "scripts": {
     "build": "babel src --out-dir . --ignore **/__tests__",
     "prepare": "npm run build",
-    "watch": "babel -w src --out-dir . --ignore **/__tests__",
+    "watch": "babel -w src --out-dir . --ignore **/__tests__ --verbose",
     "commit": "git add . && git commit && git push -u origin master"
   },
-  "author": "Jonathan Faircloth",
+  "author": "Dafeng GUo",
   "license": "MIT",
-  "homepage": "https://github.com/jafaircl/gatsby-plugin-amp#readme",
-  "repository": "https://github.com/jafaircl/gatsby-plugin-amp",
+  "homepage": "https://github.com/dfguo/gatsby-plugin-mip#readme",
+  "repository": "https://github.com/dfguo/gatsby-plugin-mip",
   "bugs": {
-    "url": "https://github.com/jafaircl/gatsby-plugin-amp/issues"
+    "url": "https://github.com/dfguo/gatsby-plugin-mip/issues"
   },
   "dependencies": {
     "jsdom": "^13.0.0",
@@ -25,8 +25,8 @@
   "keywords": [
     "gatsby",
     "gatsby-plugin",
-    "gatsby-plugin-amp",
-    "amp",
+    "gatsby-plugin-mip",
+    "mip",
     "accelerated-mobile-pages"
   ],
   "devDependencies": {
